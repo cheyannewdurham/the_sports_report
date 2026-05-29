@@ -1,15 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Sports Report</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <h1>The Sports Report</h1>
-    <p>Your Number One Source for highlights across the Internet.</p>
 
-    <a href="https://www.youtube.com/@SportsReportMVP" target="_blank">
-        Watch on YouTube
-    </a>
+<body>
+
+    <header class="site-header">
+        <div class="brand">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="The Sports Report Log"
+                 class="logo">
+
+        </div>
+
+        <nav>
+            <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+        </nav>
+    </header>
+
+<main>
+
+    <section class="hero">
+
+        <img src="{{ url_for('static', filename='images/logo_2.png') }}"
+
+             alt="The Sports Report Logo 2"
+
+             class="hero-logo">
+
+        <p class="hero-tagline">
+
+        </p>
+
+        <a class="button"
+
+           href="https://www.youtube.com/@SportsReportMVP"
+
+           target="_blank">
+
+            Watch on YouTube
+
+        </a>
+
+    </section>
+
+</main>
+
+    <footer class="site-footer">
+        <p>© 2026 The Sports Report Media. All rights reserved.</p>
+    </footer>
+
 </body>
+
 </html>
