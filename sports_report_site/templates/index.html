@@ -48,6 +48,19 @@
 
         </a>
 
+    <section class="latest-videos">
+        <div class="section-heading">
+            <p class="eyebrow">Latest Uploads</p>
+         </div>
+
+         <div class="video-carousel">
+             {% for video in videos %}
+                <a class="video-card" href="{{ video.url }}" target="_blank">
+                     <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                        <h3>{{ video.title }}</h3>
+                 </a>
+        {% endfor %}
+         </div>
     </section>
 
 </main>
