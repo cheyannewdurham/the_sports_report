@@ -19,13 +19,14 @@ animatedElements.forEach((element) => {
 
 // Mouse-position auto-scroll for latest uploads carousel
 
+const carouselWrapper = document.querySelector(".video-carousel-wrapper");
 const carousel = document.querySelector(".video-carousel");
 
-if (carousel) {
+if (carouselWrapper && carousel) {
     let scrollDirection = 0;
 
-    carousel.addEventListener("mousemove", (event) => {
-        const bounds = carousel.getBoundingClientRect();
+    carouselWrapper.addEventListener("mousemove", (event) => {
+        const bounds = carouselWrapper.getBoundingClientRect();
         const x = event.clientX - bounds.left;
 
         const edgeSize = bounds.width * 0.25;
@@ -39,13 +40,13 @@ if (carousel) {
         }
     });
 
-    carousel.addEventListener("mouseleave", () => {
+    carouselWrapper.addEventListener("mouseleave", () => {
         scrollDirection = 0;
     });
 
     function autoScrollCarousel() {
         if (scrollDirection !== 0) {
-            carousel.scrollLeft += scrollDirection * 5;
+            carousel.scrollLeft += scrollDirection * 6;
         }
 
         requestAnimationFrame(autoScrollCarousel);

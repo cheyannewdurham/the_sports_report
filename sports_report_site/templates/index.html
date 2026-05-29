@@ -11,19 +11,41 @@
 
 <body>
 
-    <header class="site-header">
-        <div class="brand">
-            <img src="{{ url_for('static', filename='images/logo.png') }}"
-                 alt="The Sports Report Logo"
-                 class="logo">
-        </div>
+<header class="site-header">
 
-        <nav>
-            <a href="#latest">Latest</a>
-            <a href="#database">Database</a>
-            <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
-        </nav>
-    </header>
+    <div class="brand">
+
+        <a href="/">
+
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+
+                 alt="The Sports Report Logo"
+
+                 class="logo">
+
+        </a>
+
+    </div>
+
+    <nav class="main-nav">
+
+        <a href="/league/nfl">NFL</a>
+
+        <a href="/league/nba">NBA</a>
+
+        <a href="/league/mlb">MLB</a>
+
+        <a href="/league/nhl">NHL</a>
+
+        <a href="#latest">Latest</a>
+
+        <a href="#database">Database</a>
+
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+
+    </nav>
+
+</header>
 
     <main>
 
@@ -78,19 +100,39 @@
 
 </div>
 
-        </section>
+<section id="database" class="database-teaser animate-on-scroll">
+    <div class="teaser-card">
+        <p class="eyebrow">Explore by League</p>
 
-        <section id="database" class="database-teaser animate-on-scroll">
-            <div class="teaser-card">
-                <p class="eyebrow">Coming Soon</p>
+        <h2>Player Database</h2>
 
-                <h2>Player Database</h2>
+        <p>
+            A searchable sports archive built around players, leagues, highlights, and season-by-season content.
+        </p>
 
-                <p>
-                    A searchable sports archive built around players, highlights, and season-by-season content.
-                </p>
-            </div>
-        </section>
+        <div class="league-grid">
+            <a class="league-card" href="/league/nfl">
+                <span>NFL</span>
+                <p>Football highlights, players, teams, and seasons.</p>
+            </a>
+
+            <a class="league-card" href="/league/nba">
+                <span>NBA</span>
+                <p>Basketball highlights, players, teams, and seasons.</p>
+            </a>
+
+            <a class="league-card" href="/league/mlb">
+                <span>MLB</span>
+                <p>Baseball highlights, players, teams, and seasons.</p>
+            </a>
+
+            <a class="league-card" href="/league/nhl">
+                <span>NHL</span>
+                <p>Hockey highlights, players, teams, and seasons.</p>
+            </a>
+        </div>
+    </div>
+</section>
 
     </main>
 

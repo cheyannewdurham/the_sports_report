@@ -304,7 +304,7 @@ a:hover {
 .database-teaser {
     max-width: var(--max-width);
     margin: 0 auto 120px;
-    padding: 0 40px;
+    padding: 80px 40px 0;
 }
 
 .teaser-card {
@@ -366,7 +366,111 @@ a:hover {
     opacity: 1;
     transform: translateY(0);
 }
+/* PHASE 2: LEAGUE NAV */
 
+.main-nav {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 28px;
+
+}
+
+.main-nav a {
+
+    color: var(--color-text);
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+
+}
+
+.main-nav a:hover {
+
+    color: var(--color-accent);
+
+}
+
+/* PHASE 2: LEAGUE CARDS */
+
+.league-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-top: 36px;
+
+}
+
+.league-card {
+
+    display: block;
+
+    padding: 28px 22px;
+
+    background:
+
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+
+        rgba(255, 255, 255, 0.03);
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    border-radius: 22px;
+
+    color: var(--color-text);
+
+    transition:
+
+        transform 0.25s ease,
+
+        border-color 0.25s ease,
+
+        box-shadow 0.25s ease;
+
+}
+
+.league-card:hover {
+
+    transform: translateY(-6px);
+
+    border-color: var(--color-accent);
+
+    box-shadow: 0 20px 50px rgba(20, 115, 255, 0.15);
+
+}
+
+.league-card span {
+
+    display: block;
+
+    font-family: var(--font-heading);
+
+    font-size: 32px;
+
+    line-height: 1;
+
+    margin-bottom: 14px;
+
+}
+
+.league-card p {
+
+    color: var(--color-muted);
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+}
 /* RESPONSIVE */
 
 @media (max-width: 800px) {
@@ -407,29 +511,88 @@ a:hover {
     .site-footer {
         flex-direction: column;
     }
+}
 
 .video-carousel-wrapper {
+
     position: relative;
+
 }
 
 .video-carousel-wrapper::before,
+
 .video-carousel-wrapper::after {
+
     content: "";
+
     position: absolute;
+
     top: 0;
+
     bottom: 28px;
+
     width: 80px;
+
     pointer-events: none;
+
     z-index: 2;
+
 }
 
 .video-carousel-wrapper::before {
+
     left: 0;
+
     background: linear-gradient(90deg, var(--color-bg), transparent);
+
 }
 
 .video-carousel-wrapper::after {
+
     right: 0;
+
     background: linear-gradient(270deg, var(--color-bg), transparent);
+
 }
+
+@media (max-width: 900px) {
+
+    .main-nav {
+
+        gap: 16px;
+
+    }
+
+    .league-grid {
+
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .site-header {
+
+        align-items: flex-start;
+
+        gap: 18px;
+
+    }
+
+    .main-nav {
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+
+    }
+
+    .league-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
 }
