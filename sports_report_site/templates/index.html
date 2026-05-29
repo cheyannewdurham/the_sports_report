@@ -14,60 +14,96 @@
     <header class="site-header">
         <div class="brand">
             <img src="{{ url_for('static', filename='images/logo.png') }}"
-                 alt="The Sports Report Log"
+                 alt="The Sports Report Logo"
                  class="logo">
-
         </div>
 
         <nav>
+            <a href="#latest">Latest</a>
+            <a href="#database">Database</a>
             <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
         </nav>
     </header>
 
-<main>
+    <main>
 
-    <section class="hero">
+        <section class="hero">
+            <img src="{{ url_for('static', filename='images/logo_2.png') }}"
+                 alt="The Sports Report Logo"
+                 class="hero-logo">
 
-        <img src="{{ url_for('static', filename='images/logo_2.png') }}"
+            <p class="hero-copy">
+            Your Number One Source for highlights across the Internet!
+            </p>
 
-             alt="The Sports Report Logo 2"
+            <div class="hero-actions">
 
-             class="hero-logo">
+                 <a class="button"
 
-        <p class="hero-tagline">
+                    href="https://www.youtube.com/@SportsReportMVP"
 
-        </p>
+                     target="_blank">
 
-        <a class="button"
+                        Watch on YouTube
 
-           href="https://www.youtube.com/@SportsReportMVP"
-
-           target="_blank">
-
-            Watch on YouTube
-
-        </a>
-
-    <section class="latest-videos">
-        <div class="section-heading">
-            <p class="eyebrow">Latest Uploads</p>
-         </div>
-
-         <div class="video-carousel">
-             {% for video in videos %}
-                <a class="video-card" href="{{ video.url }}" target="_blank">
-                     <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
-                        <h3>{{ video.title }}</h3>
                  </a>
-        {% endfor %}
-         </div>
-    </section>
 
-</main>
+</div>
+        </section>
+
+        <section id="latest" class="latest-videos animate-on-scroll">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Latest Uploads</p>
+                </div>
+            </div>
+
+            <div class="video-carousel-wrapper">
+
+    <div class="video-carousel">
+
+        {% for video in videos %}
+
+            <a class="video-card" href="{{ video.url }}" target="_blank">
+
+                <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+
+                <h3>{{ video.title }}</h3>
+
+            </a>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+        </section>
+
+        <section id="database" class="database-teaser animate-on-scroll">
+            <div class="teaser-card">
+                <p class="eyebrow">Coming Soon</p>
+
+                <h2>Player Database</h2>
+
+                <p>
+                    A searchable sports archive built around players, highlights, and season-by-season content.
+                </p>
+            </div>
+        </section>
+
+    </main>
 
     <footer class="site-footer">
         <p>© 2026 The Sports Report Media. All rights reserved.</p>
+
+        <div class="footer-links">
+            <a href="https://www.youtube.com/@SportsReportMVP" target="_blank">YouTube</a>
+            <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+        </div>
     </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
 
