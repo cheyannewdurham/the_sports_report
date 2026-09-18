@@ -29,10 +29,10 @@
 </header>
 
 <main>
-    <section class="page-hero compact">
+    <section class="page-hero compact player-live-profile" data-live-url="{{ url_for('player_live_data', league_slug=league_slug, player_slug=player.slug) }}">
         <p class="eyebrow">{{ player.league }} Player Profile</p>
         <h1>{{ player.name }}</h1>
-        <p>{{ player.display_current_team }}</p>
+        <p data-live-field="display_current_team">{{ player.display_current_team }}</p>
         <a class="button secondary" href="{{ url_for('league_page', league_slug=league_slug) }}">Back to {{ league.name }}</a>
     </section>
 
@@ -49,51 +49,39 @@
             <div class="player-profile-card">
                 <div class="player-image-frame">
                     {% if player.bio.image %}
-                        <img src="{{ player.bio.image }}" alt="{{ player.name }}">
+                        <img src="{{ player.bio.image }}" alt="{{ player.name }}" data-live-image>
                     {% else %}
-                        <div class="player-image-placeholder">{{ player.name[:1] }}</div>
+                        <div class="player-image-placeholder" data-live-image-placeholder>{{ player.name[:1] }}</div>
                     {% endif %}
                 </div>
 
                 <dl class="stat-summary">
-                    {% if player.display_current_team %}
-                        <div>
-                            <dt>Latest Sports Report Team</dt>
-                            <dd>{{ player.display_current_team }}</dd>
-                        </div>
-                    {% endif %}
-                    {% if player.bio.position %}
-                        <div>
-                            <dt>Position</dt>
-                            <dd>{{ player.bio.position }}</dd>
-                        </div>
-                    {% endif %}
-                    {% if player.bio.height or player.bio.weight %}
-                        <div>
-                            <dt>Height / Weight</dt>
-                            <dd>{% if player.bio.height %}{{ player.bio.height }}{% endif %}{% if player.bio.height and player.bio.weight %} · {% endif %}{% if player.bio.weight %}{{ player.bio.weight }} lbs{% endif %}</dd>
-                        </div>
-                    {% endif %}
-                    {% if player.draft_year %}
-                        <div>
-                            <dt>Draft</dt>
-                            <dd>
-                                {{ player.draft_year }}{% if player.bio.draft_round %}, Round {{ player.bio.draft_round }}{% endif %}{% if player.bio.draft_number %}, Pick {{ player.bio.draft_number }}{% endif %}
-                            </dd>
-                        </div>
-                    {% endif %}
-                    {% if player.bio.country or player.bio.college %}
-                        <div>
-                            <dt>Country / College</dt>
-                            <dd>{% if player.bio.country %}{{ player.bio.country }}{% endif %}{% if player.bio.country and player.bio.college %} · {% endif %}{% if player.bio.college %}{{ player.bio.college }}{% endif %}</dd>
-                        </div>
-                    {% endif %}
-                    {% if player.bio.birth_date or player.bio.birth_place %}
-                        <div>
-                            <dt>Born</dt>
-                            <dd>{% if player.bio.birth_date %}{{ player.bio.birth_date }}{% endif %}{% if player.bio.birth_date and player.bio.birth_place %} · {% endif %}{% if player.bio.birth_place %}{{ player.bio.birth_place }}{% endif %}</dd>
-                        </div>
-                    {% endif %}
+                    <div {% if not player.display_current_team %}hidden{% endif %} data-live-row="display_current_team">
+                        <dt>Latest Sports Report Team</dt>
+                        <dd data-live-field="display_current_team">{{ player.display_current_team }}</dd>
+                    </div>
+                    <div {% if not player.bio.position %}hidden{% endif %} data-live-row="position">
+                        <dt>Position</dt>
+                        <dd data-live-field="position">{{ player.bio.position }}</dd>
+                    </div>
+                    <div {% if not player.bio.height and not player.bio.weight %}hidden{% endif %} data-live-row="height_weight">
+                        <dt>Height / Weight</dt>
+                        <dd data-live-field="height_weight">{% if player.bio.height %}{{ player.bio.height }}{% endif %}{% if player.bio.height and player.bio.weight %} · {% endif %}{% if player.bio.weight %}{{ player.bio.weight }} lbs{% endif %}</dd>
+                    </div>
+                    <div {% if not player.draft_year %}hidden{% endif %} data-live-row="draft">
+                        <dt>Draft</dt>
+                        <dd data-live-field="draft">
+                            {{ player.draft_year }}{% if player.bio.draft_round %}, Round {{ player.bio.draft_round }}{% endif %}{% if player.bio.draft_number %}, Pick {{ player.bio.draft_number }}{% endif %}
+                        </dd>
+                    </div>
+                    <div {% if not player.bio.country and not player.bio.college %}hidden{% endif %} data-live-row="country_college">
+                        <dt>Country / College</dt>
+                        <dd data-live-field="country_college">{% if player.bio.country %}{{ player.bio.country }}{% endif %}{% if player.bio.country and player.bio.college %} · {% endif %}{% if player.bio.college %}{{ player.bio.college }}{% endif %}</dd>
+                    </div>
+                    <div {% if not player.bio.birth_date and not player.bio.birth_place %}hidden{% endif %} data-live-row="born">
+                        <dt>Born</dt>
+                        <dd data-live-field="born">{% if player.bio.birth_date %}{{ player.bio.birth_date }}{% endif %}{% if player.bio.birth_date and player.bio.birth_place %} · {% endif %}{% if player.bio.birth_place %}{{ player.bio.birth_place }}{% endif %}</dd>
+                    </div>
                     <div>
                         <dt>Seasons Covered</dt>
                         <dd>{{ player.display_seasons|join(', ') }}</dd>
@@ -101,58 +89,43 @@
                 </dl>
             </div>
 
-            {% if player.bio.stat_line %}
-                <div class="player-stat-line">
+                {% set stat_line = player.bio.stat_line or {} %}
+                <div class="player-stat-line" {% if not stat_line %}hidden{% endif %} data-live-stat-line>
                     <div class="stat-line-header">
                         <p class="eyebrow">Season Averages</p>
-                        <span>{{ player.bio.stat_line.season_label }} regular season</span>
+                        <span data-live-field="stat_season_label">{% if stat_line %}{{ stat_line.season_label }} regular season{% endif %}</span>
                     </div>
                     <div class="stat-line-grid">
-                        {% if player.bio.stat_line.points %}
-                            <div>
-                                <dt>PTS</dt>
-                                <dd>{{ player.bio.stat_line.points }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.rebounds %}
-                            <div>
-                                <dt>REB</dt>
-                                <dd>{{ player.bio.stat_line.rebounds }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.assists %}
-                            <div>
-                                <dt>AST</dt>
-                                <dd>{{ player.bio.stat_line.assists }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.steals %}
-                            <div>
-                                <dt>STL</dt>
-                                <dd>{{ player.bio.stat_line.steals }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.blocks %}
-                            <div>
-                                <dt>BLK</dt>
-                                <dd>{{ player.bio.stat_line.blocks }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.minutes %}
-                            <div>
-                                <dt>MIN</dt>
-                                <dd>{{ player.bio.stat_line.minutes }}</dd>
-                            </div>
-                        {% endif %}
-                        {% if player.bio.stat_line.games_played %}
-                            <div>
-                                <dt>GP</dt>
-                                <dd>{{ player.bio.stat_line.games_played }}</dd>
-                            </div>
-                        {% endif %}
+                        <div {% if not stat_line.points %}hidden{% endif %} data-live-stat="points">
+                            <dt>PTS</dt>
+                            <dd data-live-field="stat_points">{{ stat_line.points }}</dd>
+                        </div>
+                        <div {% if not stat_line.rebounds %}hidden{% endif %} data-live-stat="rebounds">
+                            <dt>REB</dt>
+                            <dd data-live-field="stat_rebounds">{{ stat_line.rebounds }}</dd>
+                        </div>
+                        <div {% if not stat_line.assists %}hidden{% endif %} data-live-stat="assists">
+                            <dt>AST</dt>
+                            <dd data-live-field="stat_assists">{{ stat_line.assists }}</dd>
+                        </div>
+                        <div {% if not stat_line.steals %}hidden{% endif %} data-live-stat="steals">
+                            <dt>STL</dt>
+                            <dd data-live-field="stat_steals">{{ stat_line.steals }}</dd>
+                        </div>
+                        <div {% if not stat_line.blocks %}hidden{% endif %} data-live-stat="blocks">
+                            <dt>BLK</dt>
+                            <dd data-live-field="stat_blocks">{{ stat_line.blocks }}</dd>
+                        </div>
+                        <div {% if not stat_line.minutes %}hidden{% endif %} data-live-stat="minutes">
+                            <dt>MIN</dt>
+                            <dd data-live-field="stat_minutes">{{ stat_line.minutes }}</dd>
+                        </div>
+                        <div {% if not stat_line.games_played %}hidden{% endif %} data-live-stat="games_played">
+                            <dt>GP</dt>
+                            <dd data-live-field="stat_games_played">{{ stat_line.games_played }}</dd>
+                        </div>
                     </div>
                 </div>
-            {% endif %}
 
             {% if player.display_team_history %}
                 <div class="player-team-history">

@@ -1618,7 +1618,11 @@ def enrich_player(player):
 
     wikidata = request_wikidata_player(player["name"])
     balldontlie = request_balldontlie_player(player["name"])
-    data = {**wikidata, **{key: value for key, value in balldontlie.items() if value}}
+    data = {
+        **cached_data,
+        **{key: value for key, value in wikidata.items() if value},
+        **{key: value for key, value in balldontlie.items() if value},
+    }
     stat_line = request_balldontlie_season_averages(
         data.get("balldontlie_id"),
         data.get("draft_year"),
@@ -2438,6 +2442,56 @@ def player_page(league_slug, player_slug):
         league_slug=league_slug,
         player=player,
     )
+
+
+@app.route("/league/<league_slug>/players/<player_slug>/live")
+def player_live_data(league_slug, player_slug):
+    league = SUPPORTED_LEAGUES.get(league_slug)
+
+    if not league:
+        abort(404)
+
+    players = get_player_database(league_slug)
+    player = next((item for item in players if item["slug"] == player_slug), None)
+
+    if not player:
+        abort(404)
+
+    force = request.args.get("refresh") == "1"
+
+    if force:
+        cache = load_player_enrichment_cache()
+        cached = cache.get(player["slug"], {})
+        cached["expires_at"] = 0
+        cache[player["slug"]] = cached
+        save_player_enrichment_cache(cache)
+
+    player = enrich_player(player)
+    player = prepare_player_display(
+        player,
+        resolve_missing_team_years=False,
+        resolve_api_current_team=False,
+        resolve_missing_reference_id=False,
+    )
+    bio = player.get("bio", {})
+
+    return jsonify({
+        "name": player.get("name", ""),
+        "display_current_team": player.get("display_current_team", ""),
+        "image": bio.get("image", ""),
+        "position": bio.get("position", ""),
+        "height": bio.get("height", ""),
+        "weight": bio.get("weight", ""),
+        "draft_year": player.get("draft_year", ""),
+        "draft_round": bio.get("draft_round", ""),
+        "draft_number": bio.get("draft_number", ""),
+        "country": bio.get("country", ""),
+        "college": bio.get("college", ""),
+        "birth_date": bio.get("birth_date", ""),
+        "birth_place": bio.get("birth_place", ""),
+        "stat_line": bio.get("stat_line", {}),
+        "source": bio.get("source", ""),
+    })
 
 
 @app.cli.command("sync-youtube-index")

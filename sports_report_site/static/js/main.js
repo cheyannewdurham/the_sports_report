@@ -153,6 +153,117 @@ if (databaseSearch && databaseSearchResults) {
     databaseSearch.addEventListener("focus", renderSearchResults);
 }
 
+// Live player enrichment
+
+const playerLiveProfile = document.querySelector(".player-live-profile[data-live-url]");
+
+function setLiveText(key, value) {
+    document.querySelectorAll(`[data-live-field="${key}"]`).forEach((element) => {
+        element.textContent = value || "";
+    });
+}
+
+function setLiveRow(key, value) {
+    document.querySelectorAll(`[data-live-row="${key}"]`).forEach((element) => {
+        element.hidden = !value;
+    });
+}
+
+function joinLiveParts(parts) {
+    return parts.filter(Boolean).join(" · ");
+}
+
+if (playerLiveProfile) {
+    fetch(playerLiveProfile.dataset.liveUrl, {
+        headers: {
+            "Accept": "application/json"
+        }
+    })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+            if (!data) {
+                return;
+            }
+
+            const currentTeam = data.display_current_team || "";
+            const heightWeight = joinLiveParts([
+                data.height || "",
+                data.weight ? `${data.weight} lbs` : ""
+            ]);
+            const draft = data.draft_year
+                ? [
+                    data.draft_year,
+                    data.draft_round ? `Round ${data.draft_round}` : "",
+                    data.draft_number ? `Pick ${data.draft_number}` : ""
+                ].filter(Boolean).join(", ")
+                : "";
+            const countryCollege = joinLiveParts([data.country || "", data.college || ""]);
+            const born = joinLiveParts([data.birth_date || "", data.birth_place || ""]);
+
+            setLiveText("display_current_team", currentTeam);
+            setLiveText("position", data.position || "");
+            setLiveText("height_weight", heightWeight);
+            setLiveText("draft", draft);
+            setLiveText("country_college", countryCollege);
+            setLiveText("born", born);
+
+            setLiveRow("display_current_team", currentTeam);
+            setLiveRow("position", data.position);
+            setLiveRow("height_weight", heightWeight);
+            setLiveRow("draft", draft);
+            setLiveRow("country_college", countryCollege);
+            setLiveRow("born", born);
+
+            if (data.image) {
+                const imageFrame = document.querySelector(".player-image-frame");
+                const existingImage = document.querySelector("[data-live-image]");
+                const placeholder = document.querySelector("[data-live-image-placeholder]");
+
+                if (existingImage) {
+                    existingImage.src = data.image;
+                } else if (imageFrame) {
+                    const image = document.createElement("img");
+                    image.src = data.image;
+                    image.alt = data.name || "";
+                    image.dataset.liveImage = "";
+                    imageFrame.appendChild(image);
+                }
+
+                if (placeholder) {
+                    placeholder.remove();
+                }
+            }
+
+            const statLine = data.stat_line || {};
+            const statLineElement = document.querySelector("[data-live-stat-line]");
+
+            if (statLineElement && Object.keys(statLine).length > 0) {
+                statLineElement.hidden = false;
+                setLiveText("stat_season_label", statLine.season_label ? `${statLine.season_label} regular season` : "");
+
+                [
+                    "points",
+                    "rebounds",
+                    "assists",
+                    "steals",
+                    "blocks",
+                    "minutes",
+                    "games_played"
+                ].forEach((key) => {
+                    const value = statLine[key] || "";
+                    const stat = document.querySelector(`[data-live-stat="${key}"]`);
+
+                    if (stat) {
+                        stat.hidden = !value;
+                    }
+
+                    setLiveText(`stat_${key}`, value);
+                });
+            }
+        })
+        .catch(() => {});
+}
+
 
 // Mouse-position auto-scroll for latest uploads carousel
 
