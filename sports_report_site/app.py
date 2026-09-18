@@ -1926,7 +1926,7 @@ def get_player_database(league_slug="nba"):
         "seasons": set(),
     })
 
-    for video in get_channel_uploads(max_results=None):
+    for video in load_video_index():
         appearance = extract_video_appearance(video)
 
         if not appearance or not is_basketball_video(video):
@@ -2032,7 +2032,7 @@ def get_players_by_letter(league_slug, letter):
 def get_featured_basketball_videos(limit=FEATURED_VIDEO_COUNT):
     videos = []
 
-    for video in get_channel_uploads():
+    for video in load_video_index()[:YOUTUBE_UPLOAD_LIMIT]:
         appearance = extract_video_appearance(video)
 
         if not appearance or not is_basketball_video(video):
@@ -2042,15 +2042,15 @@ def get_featured_basketball_videos(limit=FEATURED_VIDEO_COUNT):
         video["appearance"] = appearance
         videos.append(video)
 
-    stats = get_video_stats([video.get("id") for video in videos])
-
     for video in videos:
-        video_stats = stats.get(video.get("id"), {})
-        view_count = video_stats.get("view_count", 0)
-        video["view_count"] = view_count
-        video["view_count_label"] = format_count(view_count)
+        video["view_count"] = 0
+        video["view_count_label"] = ""
 
-    return sorted(videos, key=lambda video: video["view_count"], reverse=True)[:limit]
+    return sorted(
+        videos,
+        key=lambda video: video.get("published_at", ""),
+        reverse=True,
+    )[:limit]
 
 
 def build_player_index(players):

@@ -3,3 +3,5 @@
 __pycache__/
 data/*.json
 !data/*.example.json
+!data/youtube_video_index.json
+!data/nba_roster_overrides.json
