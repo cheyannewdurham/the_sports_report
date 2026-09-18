@@ -42,3 +42,15 @@ scheduled:
 ```bash
 .venv/bin/flask --app app refresh-roster-overrides --dry-run --limit 10 --delay 20 --force
 ```
+
+To rebuild from public sources, try cached/Wikidata team data first, use the
+Sports Report archive next, and supplement with balldontlie only when needed:
+
+```bash
+.venv/bin/flask --app app rebuild-roster-overrides-from-public-sources --limit 25 --dry-run --force
+.venv/bin/flask --app app rebuild-roster-overrides-from-public-sources --force
+```
+
+Use `--skip-balldontlie` to avoid balldontlie entirely, or `--skip-wikidata` to
+use cached public data plus the Sports Report archive only. Entries marked
+`"source": "manual"` are preserved unless you pass `--force-manual`.

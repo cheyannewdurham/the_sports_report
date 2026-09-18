@@ -714,6 +714,16 @@ def get_roster_override_team(player):
     return ""
 
 
+def normalize_nba_team_name(team_name):
+    normalized_team_name = normalize_lookup_name(team_name)
+
+    for team in NBA_TEAM_NAMES:
+        if normalize_lookup_name(team) == normalized_team_name:
+            return team
+
+    return ""
+
+
 def find_wikidata_entity_id(player_name):
     try:
         response = requests.get(
@@ -2606,6 +2616,138 @@ def rebuild_roster_overrides_from_youtube_command(limit, team_slug, force):
     metadata["updated_at"] = timestamp
     save_nba_roster_overrides(overrides)
     click.echo(f"Wrote {written} players. Skipped {skipped}. Unavailable {unavailable}.")
+
+
+@app.cli.command("rebuild-roster-overrides-from-public-sources")
+@click.option("--limit", default=0, type=int, help="Maximum player records to check. Use 0 for all.")
+@click.option("--start", default=0, type=int, help="Zero-based player offset to start from.")
+@click.option("--team", "team_slug", default="", help="Only write players attached to this team slug, such as miami-heat.")
+@click.option("--delay", default=1.0, type=float, help="Seconds to wait between players that use external lookups.")
+@click.option("--skip-wikidata", is_flag=True, help="Skip live Wikidata lookups and use cached public data only.")
+@click.option("--skip-balldontlie", is_flag=True, help="Do not use balldontlie as the final fallback.")
+@click.option("--force", is_flag=True, help="Overwrite existing non-manual override entries.")
+@click.option("--force-manual", is_flag=True, help="Overwrite entries marked source=manual.")
+@click.option("--dry-run", is_flag=True, help="Print results without writing JSON.")
+def rebuild_roster_overrides_from_public_sources_command(
+    limit,
+    start,
+    team_slug,
+    delay,
+    skip_wikidata,
+    skip_balldontlie,
+    force,
+    force_manual,
+    dry_run,
+):
+    players = get_player_database("nba")
+
+    if team_slug:
+        players = [
+            player
+            for player in players
+            if any(slugify(team.get("team", "")) == team_slug for team in player.get("team_history", []))
+        ]
+
+    if start:
+        players = players[start:]
+
+    if limit:
+        players = players[:limit]
+
+    overrides = load_nba_roster_overrides()
+
+    if not isinstance(overrides, dict):
+        overrides = {}
+
+    override_players = overrides.setdefault("players", {})
+    metadata = overrides.setdefault("meta", {})
+    cache = load_player_enrichment_cache()
+    timestamp = utc_timestamp()
+    checked = 0
+    written = 0
+    skipped = 0
+    unavailable = 0
+    used_external_lookup = False
+
+    for index, player in enumerate(players):
+        existing = override_players.get(player["slug"])
+        existing_source = existing.get("source") if isinstance(existing, dict) else ""
+
+        if existing and existing_source == "manual" and not force_manual:
+            skipped += 1
+            click.echo(f"Skipped {player['name']}: manual override")
+            continue
+
+        if existing and existing_source != "manual" and not force:
+            skipped += 1
+            click.echo(f"Skipped {player['name']}: override already exists")
+            continue
+
+        checked += 1
+        cached = cache.get(player["slug"], {})
+        data = cached.get("data", {})
+        current_team = normalize_nba_team_name(data.get("public_current_team", ""))
+        source = "wikidata_cache" if current_team else ""
+
+        if not current_team and not skip_wikidata:
+            wikidata = request_wikidata_player(player["name"])
+            used_external_lookup = True
+            wikidata_team = normalize_nba_team_name(wikidata.get("public_current_team", ""))
+
+            if wikidata:
+                data = {**data, **{key: value for key, value in wikidata.items() if value}}
+                cached["data"] = data
+                cache[player["slug"]] = cached
+
+            if wikidata_team:
+                current_team = wikidata_team
+                source = "wikidata"
+
+        if not current_team:
+            current_team = normalize_nba_team_name(player.get("current_team", ""))
+            source = "youtube_archive" if current_team else ""
+
+        if not current_team and not skip_balldontlie:
+            balldontlie = request_balldontlie_player(player["name"])
+            used_external_lookup = True
+            balldontlie_team = normalize_nba_team_name(balldontlie.get("current_team", ""))
+
+            if balldontlie_team:
+                current_team = balldontlie_team
+                source = "balldontlie"
+            elif balldontlie.get("lookup_error") == "rate_limited":
+                click.echo("Stopping early because balldontlie returned 429. Increase --delay before continuing.")
+                break
+
+        if current_team:
+            if not dry_run:
+                override_players[player["slug"]] = {
+                    "team": current_team,
+                    "source": source,
+                    "updated_at": timestamp,
+                }
+
+            written += 1
+            click.echo(f"Wrote {player['name']}: {current_team} ({source})")
+        else:
+            unavailable += 1
+            click.echo(f"Unavailable {player['name']}")
+
+        if used_external_lookup and index < len(players) - 1 and delay > 0:
+            time.sleep(delay)
+
+        used_external_lookup = False
+
+    if not dry_run:
+        metadata["source"] = "public_sources"
+        metadata["updated_at"] = timestamp
+        save_nba_roster_overrides(overrides)
+        save_player_enrichment_cache(cache)
+
+    if dry_run:
+        click.echo("Dry run complete. No JSON files were written.")
+
+    click.echo(f"Checked {checked} players. Wrote {written}. Skipped {skipped}. Unavailable {unavailable}.")
 
 
 @app.cli.command("warm-current-teams")
