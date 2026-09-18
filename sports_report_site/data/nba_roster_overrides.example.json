@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "source": "manual",
+    "updated_at": "2026-09-18T00:00:00Z"
+  },
+  "players": {
+    "lebron-james": {
+      "team": "Los Angeles Lakers",
+      "source": "manual",
+      "updated_at": "2026-09-18T00:00:00Z"
+    },
+    "stephen-curry": "Golden State Warriors"
+  }
+}

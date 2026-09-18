@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ player.name }} Highlights | The Sports Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="brand">
+        <a href="/">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="The Sports Report Logo"
+                 class="logo">
+        </a>
+    </div>
+
+    <nav class="main-nav">
+        <a href="/league/nfl">NFL</a>
+        <a href="/league/nba">NBA</a>
+        <a href="/league/mlb">MLB</a>
+        <a href="/league/nhl">NHL</a>
+        <a href="/#latest">Latest</a>
+        <a href="/#database">Database</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </nav>
+</header>
+
+<main>
+    <section class="page-hero compact">
+        <p class="eyebrow">{{ player.league }} Player Profile</p>
+        <h1>{{ player.name }}</h1>
+        <p>{{ player.display_current_team }}</p>
+        <a class="button secondary" href="{{ url_for('league_page', league_slug=league_slug) }}">Back to {{ league.name }}</a>
+    </section>
+
+    <section class="database-page">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div>
+                    <p class="eyebrow">Stat Card</p>
+                    <h2>{{ player.name }}</h2>
+                </div>
+                <div class="stat-pill">{{ player.video_count }} video{{ '' if player.video_count == 1 else 's' }}</div>
+            </div>
+
+            <div class="player-profile-card">
+                <div class="player-image-frame">
+                    {% if player.bio.image %}
+                        <img src="{{ player.bio.image }}" alt="{{ player.name }}">
+                    {% else %}
+                        <div class="player-image-placeholder">{{ player.name[:1] }}</div>
+                    {% endif %}
+                </div>
+
+                <dl class="stat-summary">
+                    {% if player.display_current_team %}
+                        <div>
+                            <dt>Latest Sports Report Team</dt>
+                            <dd>{{ player.display_current_team }}</dd>
+                        </div>
+                    {% endif %}
+                    {% if player.bio.position %}
+                        <div>
+                            <dt>Position</dt>
+                            <dd>{{ player.bio.position }}</dd>
+                        </div>
+                    {% endif %}
+                    {% if player.bio.height or player.bio.weight %}
+                        <div>
+                            <dt>Height / Weight</dt>
+                            <dd>{% if player.bio.height %}{{ player.bio.height }}{% endif %}{% if player.bio.height and player.bio.weight %} · {% endif %}{% if player.bio.weight %}{{ player.bio.weight }} lbs{% endif %}</dd>
+                        </div>
+                    {% endif %}
+                    {% if player.draft_year %}
+                        <div>
+                            <dt>Draft</dt>
+                            <dd>
+                                {{ player.draft_year }}{% if player.bio.draft_round %}, Round {{ player.bio.draft_round }}{% endif %}{% if player.bio.draft_number %}, Pick {{ player.bio.draft_number }}{% endif %}
+                            </dd>
+                        </div>
+                    {% endif %}
+                    {% if player.bio.country or player.bio.college %}
+                        <div>
+                            <dt>Country / College</dt>
+                            <dd>{% if player.bio.country %}{{ player.bio.country }}{% endif %}{% if player.bio.country and player.bio.college %} · {% endif %}{% if player.bio.college %}{{ player.bio.college }}{% endif %}</dd>
+                        </div>
+                    {% endif %}
+                    {% if player.bio.birth_date or player.bio.birth_place %}
+                        <div>
+                            <dt>Born</dt>
+                            <dd>{% if player.bio.birth_date %}{{ player.bio.birth_date }}{% endif %}{% if player.bio.birth_date and player.bio.birth_place %} · {% endif %}{% if player.bio.birth_place %}{{ player.bio.birth_place }}{% endif %}</dd>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <dt>Seasons Covered</dt>
+                        <dd>{{ player.display_seasons|join(', ') }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            {% if player.bio.stat_line %}
+                <div class="player-stat-line">
+                    <div class="stat-line-header">
+                        <p class="eyebrow">Season Averages</p>
+                        <span>{{ player.bio.stat_line.season_label }} regular season</span>
+                    </div>
+                    <div class="stat-line-grid">
+                        {% if player.bio.stat_line.points %}
+                            <div>
+                                <dt>PTS</dt>
+                                <dd>{{ player.bio.stat_line.points }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.rebounds %}
+                            <div>
+                                <dt>REB</dt>
+                                <dd>{{ player.bio.stat_line.rebounds }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.assists %}
+                            <div>
+                                <dt>AST</dt>
+                                <dd>{{ player.bio.stat_line.assists }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.steals %}
+                            <div>
+                                <dt>STL</dt>
+                                <dd>{{ player.bio.stat_line.steals }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.blocks %}
+                            <div>
+                                <dt>BLK</dt>
+                                <dd>{{ player.bio.stat_line.blocks }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.minutes %}
+                            <div>
+                                <dt>MIN</dt>
+                                <dd>{{ player.bio.stat_line.minutes }}</dd>
+                            </div>
+                        {% endif %}
+                        {% if player.bio.stat_line.games_played %}
+                            <div>
+                                <dt>GP</dt>
+                                <dd>{{ player.bio.stat_line.games_played }}</dd>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if player.display_team_history %}
+                <div class="player-team-history">
+                    <div class="player-team-history-header">
+                        <p class="eyebrow">Teams</p>
+                        <h3>Teams and years</h3>
+                    </div>
+                    <div class="team-history-table">
+                    <div class="team-history-row table-head">
+                        <span>Team</span>
+                        <span>Years</span>
+                        <span>Videos</span>
+                    </div>
+
+                    {% for team in player.display_team_history %}
+                        <div class="team-history-row">
+                            <span>{{ team.team }}</span>
+                            <span>{{ team.years }}</span>
+                            <span>{{ team.video_count }}</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="database-toolbar">
+                <div>
+                    <p class="eyebrow">Video Repository</p>
+                    <h2>Channel videos</h2>
+                </div>
+            {% if player.seasons %}
+                <div class="season-list large">
+                    {% for season in player.display_seasons %}
+                        <span>{{ season }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="video-grid">
+            {% for video in player.videos %}
+                <a class="video-card" href="{{ video.url }}" target="_blank">
+                    {% if video.thumbnail %}
+                        <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                    {% endif %}
+                    <h3>{{ video.title }}</h3>
+                    {% if video.appearance %}
+                        <p>{% if video.appearance.season %}{{ video.appearance.season }} · {% endif %}{{ video.appearance.teams|join(' / ') }}</p>
+                    {% elif video.related_match %}
+                        <p>Related Sports Report video</p>
+                    {% endif %}
+                    {% if video.published_at %}
+                        <p>{{ video.published_at[:10] }}</p>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 The Sports Report Media. All rights reserved.</p>
+
+    <div class="footer-links">
+        <a href="https://www.youtube.com/@SportsReportMVP" target="_blank">YouTube</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

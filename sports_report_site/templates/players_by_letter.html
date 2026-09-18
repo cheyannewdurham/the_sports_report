@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ league.name }} Players: {{ letter }} | The Sports Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="brand">
+        <a href="/">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="The Sports Report Logo"
+                 class="logo">
+        </a>
+    </div>
+
+    <nav class="main-nav">
+        <a href="/league/nfl">NFL</a>
+        <a href="/league/nba">NBA</a>
+        <a href="/league/mlb">MLB</a>
+        <a href="/league/nhl">NHL</a>
+        <a href="/#latest">Latest</a>
+        <a href="/#database">Database</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </nav>
+</header>
+
+<main>
+    <section class="page-hero compact">
+        <p class="eyebrow">{{ league.name }} Players</p>
+        <h1>{{ letter }}</h1>
+        <p>{{ players|length }} player profile{{ '' if players|length == 1 else 's' }} under this letter.</p>
+        <a class="button secondary" href="{{ url_for('league_page', league_slug=league_slug) }}">Back to {{ league.name }}</a>
+    </section>
+
+    <section class="database-page">
+        <nav class="alphabet-index compact" aria-label="NBA player alphabetical index">
+            {% for item in player_index %}
+                {% if item.enabled %}
+                    <a class="{{ 'is-active' if item.letter == letter else '' }}"
+                       href="{{ url_for('player_index_page', league_slug=league_slug, letter=item.letter) }}">
+                        <span>{{ item.letter }}</span>
+                        <small>{{ item.count }}</small>
+                    </a>
+                {% else %}
+                    <span class="is-disabled">
+                        <span>{{ item.letter }}</span>
+                        <small>0</small>
+                    </span>
+                {% endif %}
+            {% endfor %}
+        </nav>
+
+        {% if players %}
+            <div class="player-list">
+                {% for player in players %}
+                    <a class="player-list-row"
+                       href="{{ url_for('player_page', league_slug=league_slug, player_slug=player.slug) }}">
+                        <span>{{ player.name }}</span>
+                        <span>{{ player.display_current_team }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p class="eyebrow">No Players</p>
+                <h2>No indexed players under {{ letter }}.</h2>
+            </div>
+        {% endif %}
+    </section>
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 The Sports Report Media. All rights reserved.</p>
+
+    <div class="footer-links">
+        <a href="https://www.youtube.com/@SportsReportMVP" target="_blank">YouTube</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

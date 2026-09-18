@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.name }} Players | The Sports Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="brand">
+        <a href="/">
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="The Sports Report Logo"
+                 class="logo">
+        </a>
+    </div>
+
+    <nav class="main-nav">
+        <a href="/league/nfl">NFL</a>
+        <a href="/league/nba">NBA</a>
+        <a href="/league/mlb">MLB</a>
+        <a href="/league/nhl">NHL</a>
+        <a href="/#latest">Latest</a>
+        <a href="/#database">Database</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </nav>
+</header>
+
+<main>
+    <section class="page-hero compact">
+        <p class="eyebrow">{{ league.name }} Team Page</p>
+        <h1>{{ team.name }}</h1>
+        <p>{% if team.city %}{{ team.city }} · {% endif %}{{ team.player_count }} listed player{{ '' if team.player_count == 1 else 's' }}{% if team.years_active %} · {{ team.years_active }}{% endif %}</p>
+    </section>
+
+    <section class="database-page">
+        <section class="team-roster-section">
+            <div class="database-toolbar">
+                <div>
+                    <p class="eyebrow">Current</p>
+                    <h2>Current {{ team.name }} players</h2>
+                    <p>{{ team.current_players|length }} player{{ '' if team.current_players|length == 1 else 's' }} whose API current team is {{ team.name }}.</p>
+                </div>
+            </div>
+
+            <div class="player-list team-player-list">
+                {% for player in team.current_players %}
+                    <a class="player-list-row"
+                       href="{{ url_for('player_page', league_slug=league_slug, player_slug=player.slug) }}">
+                        <span>{{ player.name }}</span>
+                        <span>{{ player.team_label }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+
+            {% if team.current_videos %}
+                <div class="video-grid">
+                    {% for video in team.current_videos[:12] %}
+                        <a class="video-card" href="{{ video.url }}" target="_blank">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                            {% endif %}
+                            <h3>{{ video.title }}</h3>
+                            {% if video.appearance %}
+                                <p>{{ video.appearance.player_name }}{% if video.appearance.season %} · {{ video.appearance.season }}{% endif %}</p>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        {% if team.legacy_players %}
+            <section class="team-roster-section legacy">
+                <div class="database-toolbar team-video-toolbar">
+                    <div>
+                        <p class="eyebrow">Legacy</p>
+                        <h2>Legacy {{ team.name }} players</h2>
+                        <p>{{ team.legacy_players|length }} archive player{{ '' if team.legacy_players|length == 1 else 's' }} whose API current team is different or unavailable.</p>
+                    </div>
+                </div>
+
+                <div class="player-list team-player-list">
+                    {% for player in team.legacy_players %}
+                        <a class="player-list-row"
+                           href="{{ url_for('player_page', league_slug=league_slug, player_slug=player.slug) }}">
+                            <span>{{ player.name }}</span>
+                            <span>{{ player.team_label }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+
+                {% if team.legacy_videos %}
+                    <div class="video-grid">
+                        {% for video in team.legacy_videos[:12] %}
+                            <a class="video-card" href="{{ video.url }}" target="_blank">
+                                {% if video.thumbnail %}
+                                    <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
+                                {% endif %}
+                                <h3>{{ video.title }}</h3>
+                                {% if video.appearance %}
+                                    <p>{{ video.appearance.player_name }}{% if video.appearance.season %} · {{ video.appearance.season }}{% endif %}</p>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
+        {% endif %}
+    </section>
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 The Sports Report Media. All rights reserved.</p>
+
+    <div class="footer-links">
+        <a href="https://www.youtube.com/@SportsReportMVP" target="_blank">YouTube</a>
+        <a href="mailto:contact@thesportsreportmedia.com">Contact</a>
+    </div>
+</footer>
+
+</body>
+</html>

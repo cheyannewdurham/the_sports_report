@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"1ea556db31468c8af8edfbcc10582f16"})});</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Sports Report</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9XG85S25E3"></script>
 <script>
@@ -17,6 +15,7 @@
 
   gtag('config', 'G-9XG85S25E3');
 </script>
+</head>
 <body>
 
 <header class="site-header">
@@ -107,6 +106,7 @@
     </div>
 
 </div>
+        </section>
 
 <section id="database" class="database-teaser animate-on-scroll">
     <div class="teaser-card">
@@ -154,6 +154,23 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function loadScript(callback) {
+            var head = document.getElementsByTagName("head")[0];
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "https://tracker.metricool.com/resources/be.js";
+            script.onreadystatechange = callback;
+            script.onload = callback;
+            head.appendChild(script);
+        }
+
+        loadScript(function () {
+            if (window.beTracker) {
+                beTracker.t({hash: "1ea556db31468c8af8edfbcc10582f16"});
+            }
+        });
+    </script>
 
 </body>
 
